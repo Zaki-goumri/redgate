@@ -1,0 +1,14 @@
+# binaries
+/bin/
+/dist/
+
+# local env
+.env
+.DS_Store
+
+# IDE
+.idea/
+.vscode/
+
+# logs
+*.log

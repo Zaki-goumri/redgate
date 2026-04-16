@@ -1,0 +1,47 @@
+server:
+  listen_addr: ":6380"
+  read_timeout: 5s
+  write_timeout: 5s
+  idle_timeout: 60s
+  tls:
+    enabled: false
+    cert_file: ""
+    key_file: ""
+
+admin:
+  enabled: true
+  listen_addr: "127.0.0.1:16380"
+
+backends:
+  - name: cache-a
+    address: "127.0.0.1:6379"
+  - name: cache-b
+    address: "127.0.0.1:6381"
+
+routing:
+  strategy: prefix
+  rules:
+    - match:
+        command: "*"
+        key_prefix: "tenant_a:"
+      target: "cache-a"
+    - match:
+        command: "*"
+        key_prefix: "tenant_b:"
+      target: "cache-b"
+
+pool:
+  min_idle: 2
+  max_size: 64
+  idle_timeout: 60s
+  dial_timeout: 2s
+  read_timeout: 2s
+  write_timeout: 2s
+
+namespace:
+  enabled: true
+  mode: required
+
+metrics:
+  enabled: true
+  listen_addr: "127.0.0.1:9109"
