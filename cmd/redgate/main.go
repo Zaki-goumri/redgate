@@ -7,7 +7,7 @@ import (
 )
 
 func main() {
-	srv := proxy.NewServer(":6380")
+	srv := proxy.NewServer(":6382")
 	if err := srv.Start(); err != nil {
 		log.Fatalf("Server failed: %v", err)
 	}

@@ -37,7 +37,6 @@ func (s *Server) Start() error {
 func (s *Server) handleConnection(conn net.Conn) {
 	defer conn.Close()
 	log.Printf("Client connected: %s\n", conn.RemoteAddr())
-
 	reader := resp.NewReader(conn)
 	for {
 		val, err := reader.Read()
@@ -54,7 +53,7 @@ func (s *Server) handleConnection(conn net.Conn) {
 		for _, v := range val.Array {
 			args = append(args, string(v.Str))
 		}
-		fmt.Printf("➡️  Received: %s\n", strings.Join(args, " "))
+		fmt.Printf("Received: %s\n", strings.Join(args, " "))
 
 		cmd := strings.ToUpper(string(val.Array[0].Str))
 
@@ -69,7 +68,20 @@ func (s *Server) handleConnection(conn net.Conn) {
 			arg := string(val.Array[1].Str)
 			fmt.Fprintf(conn, "$%d\r\n%s\r\n", len(arg), arg)
 		case "COMMAND":
+			if len(val.Array) >= 2 {
+				sub := strings.ToUpper(string(val.Array[1].Str))
+				if sub == "COUNT" {
+					fmt.Fprint(conn, ":0\r\n")
+				} else {
+					fmt.Fprint(conn, "*0\r\n")
+				}
+			} else {
+				fmt.Fprint(conn, "*0\r\n")
+			}
+		case "SET":
 			fmt.Fprint(conn, "+OK\r\n")
+		case "GET":
+			fmt.Fprint(conn, "$-1\r\n")
 		default:
 			fmt.Fprintf(conn, "-ERR unknown command '%s'\r\n", cmd)
 		}

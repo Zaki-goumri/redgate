@@ -15,19 +15,12 @@ func NewReader(rd io.Reader) *Reader {
 	return &Reader{reader: bufio.NewReader(rd)}
 }
 
-func (r *Reader) readLine() (line []byte, n int, err error) {
-	for {
-		b, err := r.reader.ReadByte()
-		if err != nil {
-			return nil, 0, err
-		}
-		n += 1
-		line := append(line, b)
-		if len(line) >= 2 && line[len(line)-2] == '\r' && line[len(line)-1] == '\n' {
-			break
-		}
+func (r *Reader) readLine() ([]byte, int, error) {
+	line, err := r.reader.ReadBytes('\n')
+	if err != nil {
+		return nil, 0, err
 	}
-	return line[:len(line)-2], n, nil
+	return line[:len(line)-2], len(line), nil
 }
 
 func (r *Reader) Read() (v Value, err error) {
@@ -41,7 +34,7 @@ func (r *Reader) Read() (v Value, err error) {
 	case BulkString:
 		return r.readBulkString()
 	default:
-		return Value{}, fmt.Errorf("unknow type: %v", string(_type))
+		return Value{}, fmt.Errorf("unknown type: %v", string(_type))
 	}
 }
 
