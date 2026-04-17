@@ -33,6 +33,12 @@ func (r *Reader) Read() (v Value, err error) {
 		return r.readArray()
 	case BulkString:
 		return r.readBulkString()
+	case SimpleString:
+		return r.readSimpleString()
+	case Error:
+		return r.readError()
+	case Integer:
+		return r.readInteger()
 	default:
 		return Value{}, fmt.Errorf("unknown type: %v", string(_type))
 	}
@@ -69,6 +75,10 @@ func (r *Reader) readBulkString() (Value, error) {
 
 	length, _ := strconv.Atoi(string(line))
 
+	if length == -1 {
+		v.Str = nil
+		return Value{Typ: Null}, nil
+	}
 	v.Str = make([]byte, length)
 	_, err = io.ReadFull(r.reader, v.Str)
 	if err != nil {
@@ -78,4 +88,27 @@ func (r *Reader) readBulkString() (Value, error) {
 	r.readLine()
 
 	return v, nil
+}
+func (r *Reader) readSimpleString() (Value, error) {
+	line, _, err := r.readLine()
+	if err != nil {
+		return Value{}, err
+	}
+	return Value{Typ: SimpleString, Str: line}, nil
+}
+
+func (r *Reader) readError() (Value, error) {
+	line, _, err := r.readLine()
+	if err != nil {
+		return Value{}, err
+	}
+	return Value{Typ: Error, Str: line}, nil
+}
+
+func (r *Reader) readInteger() (Value, error) {
+	line, _, err := r.readLine()
+	if err != nil {
+		return Value{}, err
+	}
+	return Value{Typ: Integer, Str: line}, nil
 }

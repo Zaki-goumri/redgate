@@ -6,6 +6,7 @@ const (
 	Integer      = ':'
 	BulkString   = '$'
 	Array        = '*'
+	Null         = '0'
 )
 
 type Value struct {
