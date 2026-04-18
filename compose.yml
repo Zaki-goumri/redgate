@@ -11,17 +11,17 @@ services:
     ports:
       - "6381:6379"
 
-  redgate:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    command: ["--config", "/app/config.yaml"]
-    volumes:
-      - ./config.example.yaml:/app/config.yaml:ro
-    ports:
-      - "6380:6380"
-      - "9109:9109"
-      - "16380:16380"
-    depends_on:
-      - redis-a
-      - redis-b
+  # redgate:
+  #   build:
+  #     context: .
+  #     dockerfile: Dockerfile
+  #   command: ["--config", "/app/config.yaml"]
+  #   volumes:
+  #     - ./config.example.yaml:/app/config.yaml:ro
+  #   ports:
+  #     - "6380:6380"
+  #     - "9109:9109"
+  #     - "16380:16380"
+  #   depends_on:
+  #     - redis-a
+  #     - redis-b
